@@ -1,0 +1,62 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Admin Dashboard - TurfEase{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body class="theme-dark">
+    <nav class="navbar">
+        <a href="{% url 'home' %}" class="logo">Turf<span>Ease</span></a>
+        <ul class="nav-links">
+            <li><a href="{% url 'home' %}">View Site</a></li>
+            <li><a href="{% url 'logout' %}" class="btn-nav">Logout</a></li>
+        </ul>
+    </nav>
+
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li class="{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Admin Panel</h2>
+                <p>Welcome, {{ user.username }}</p>
+            </div>
+            <nav>
+                <a href="{% url 'dashboard_home' %}" class="{% if request.resolver_match.url_name == 'dashboard_home' %}active{% endif %}">
+                    &#128200; Dashboard
+                </a>
+                <a href="{% url 'dashboard_turfs' %}" class="{% if 'turf' in request.resolver_match.url_name %}active{% endif %}">
+                    &#9917; Turfs
+                </a>
+                <a href="{% url 'dashboard_bookings' %}" class="{% if request.resolver_match.url_name == 'dashboard_bookings' %}active{% endif %}">
+                    &#128197; Bookings
+                </a>
+                <a href="{% url 'dashboard_users' %}" class="{% if request.resolver_match.url_name == 'dashboard_users' %}active{% endif %}">
+                    &#128101; Users
+                </a>
+                <a href="{% url 'dashboard_maintenance' %}" class="{% if 'maintenance' in request.resolver_match.url_name %}active{% endif %}">
+                    &#128736; Maintenance
+                </a>
+                <a href="{% url 'logout' %}">
+                    &#128682; Logout
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+            {% block dashboard_content %}{% endblock %}
+        </main>
+    </div>
+</body>
+</html>

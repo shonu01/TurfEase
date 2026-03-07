@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Book {{ turf.name }} - TurfEase{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="form-container">
+        <div class="booking-info">
+            <h3>{{ turf.name }}</h3>
+            <span class="price">&#8377; {{ turf.price_per_hour }} / hr</span>
+        </div>
+        {% if turf.price_5a_side > 0 or turf.price_7a_side > 0 %}
+        <div class="pricing-note" style="background: rgba(20,184,166,0.1); border-left: 3px solid #14b8a6; padding: 10px 15px; margin-bottom: 20px; border-radius: 6px; font-size: 0.9rem; color: #94a3b8;">
+            {% if turf.price_5a_side > 0 %}
+                <p style="margin:4px 0;">&#9917; 5-a-side surcharge: <strong style="color:#14b8a6;">+ &#8377;{{ turf.price_5a_side }}</strong> (fixed)</p>
+            {% endif %}
+            {% if turf.price_7a_side > 0 %}
+                <p style="margin:4px 0;">&#9917; 7-a-side surcharge: <strong style="color:#14b8a6;">+ &#8377;{{ turf.price_7a_side }}</strong> (fixed)</p>
+            {% endif %}
+        </div>
+        {% endif %}
+        <h2>Select Your Slot</h2>
+        <form method="post">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <ul class="errorlist">
+                            {% for error in field.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn-submit">Confirm Booking</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}My Bookings - TurfEase{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>My Bookings</h1>
+        <p>View all your past and upcoming reservations</p>
+    </div>
+
+    {% if bookings %}
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Turf</th>
+                        <th>Date</th>
+                        <th>Start Time</th>
+                        <th>End Time</th>
+                        <th>Members</th>
+                        <th>Total Price</th>
+                        <th>Booked On</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in bookings %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ booking.turf.name }}</td>
+                            <td>{{ booking.booking_date }}</td>
+                            <td>{{ booking.start_time|time:"h:i A" }}</td>
+                            <td>{{ booking.end_time|time:"h:i A" }}</td>
+                            <td>{{ booking.get_members_display }}</td>
+                            <td>&#8377; {{ booking.total_price }}</td>
+                            <td>{{ booking.created_at|date:"M d, Y" }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">&#128197;</div>
+            <h3>No bookings yet</h3>
+            <p>Browse our turfs and make your first booking!</p>
+            <a href="{% url 'turf_list' %}" class="btn-hero">Browse Turfs</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

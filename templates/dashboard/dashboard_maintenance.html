@@ -1,0 +1,48 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Maintenance Blocks - TurfEase{% endblock %}
+
+{% block dashboard_content %}
+<h1>Maintenance Blocks</h1>
+
+<a href="{% url 'add_maintenance' %}" class="btn-add">&#43; Block a Slot</a>
+
+{% if blocks %}
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Turf</th>
+                    <th>Date</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Reason</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for block in blocks %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ block.turf.name }}</td>
+                        <td>{{ block.date }}</td>
+                        <td>{{ block.start_time|time:"h:i A" }}</td>
+                        <td>{{ block.end_time|time:"h:i A" }}</td>
+                        <td>{{ block.reason|default:"—" }}</td>
+                        <td>
+                            <a href="{% url 'delete_maintenance' block.pk %}" class="btn-action btn-delete">Remove</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div class="empty-state">
+        <div class="empty-icon">&#128736;</div>
+        <h3>No maintenance blocks</h3>
+        <p>All turfs are currently available for booking.</p>
+    </div>
+{% endif %}
+{% endblock %}

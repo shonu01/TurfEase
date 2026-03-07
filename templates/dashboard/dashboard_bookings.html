@@ -1,0 +1,46 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}All Bookings - TurfEase{% endblock %}
+
+{% block dashboard_content %}
+<h1>All Bookings</h1>
+
+{% if bookings %}
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>User</th>
+                    <th>Turf</th>
+                    <th>Date</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Members</th>
+                    <th>Total Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in bookings %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ booking.user.username }}</td>
+                        <td>{{ booking.turf.name }}</td>
+                        <td>{{ booking.booking_date }}</td>
+                        <td>{{ booking.start_time|time:"h:i A" }}</td>
+                        <td>{{ booking.end_time|time:"h:i A" }}</td>
+                        <td>{{ booking.get_members_display }}</td>
+                        <td>&#8377; {{ booking.total_price }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div class="empty-state">
+        <div class="empty-icon">&#128197;</div>
+        <h3>No bookings yet</h3>
+        <p>Bookings will appear here when users start booking turfs.</p>
+    </div>
+{% endif %}
+{% endblock %}

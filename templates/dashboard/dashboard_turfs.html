@@ -1,0 +1,47 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Manage Turfs - TurfEase{% endblock %}
+
+{% block dashboard_content %}
+<h1>Manage Turfs</h1>
+
+<a href="{% url 'add_turf' %}" class="btn-add">&#43; Add New Turf</a>
+
+{% if turfs %}
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Location</th>
+                    <th>Price/Hour</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for turf in turfs %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ turf.name }}</td>
+                        <td>{{ turf.location }}</td>
+                        <td>&#8377; {{ turf.price_per_hour }}</td>
+                        <td>{{ turf.created_at|date:"M d, Y" }}</td>
+                        <td>
+                            <a href="{% url 'edit_turf' turf.pk %}" class="btn-action btn-edit">Edit</a>
+                            <a href="{% url 'delete_turf' turf.pk %}" class="btn-action btn-delete">Delete</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div class="empty-state">
+        <div class="empty-icon">&#9917;</div>
+        <h3>No turfs added yet</h3>
+        <p>Click the button above to add your first turf.</p>
+    </div>
+{% endif %}
+{% endblock %}

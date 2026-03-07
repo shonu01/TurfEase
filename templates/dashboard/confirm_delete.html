@@ -1,0 +1,20 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Delete Turf - TurfEase{% endblock %}
+
+{% block dashboard_content %}
+<h1>Delete Turf</h1>
+
+<div class="confirm-box">
+    <div class="confirm-icon">&#9888;</div>
+    <h2>Are you sure?</h2>
+    <p>You are about to delete <strong>{{ turf.name }}</strong>. This action cannot be undone.</p>
+    <form method="post">
+        {% csrf_token %}
+        <div class="btn-group">
+            <a href="{% url 'dashboard_turfs' %}" class="btn-cancel">Cancel</a>
+            <button type="submit" class="btn-confirm-delete">Delete</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

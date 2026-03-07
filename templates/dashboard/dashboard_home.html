@@ -1,0 +1,66 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Dashboard - TurfEase{% endblock %}
+
+{% block dashboard_content %}
+<h1>Dashboard Overview</h1>
+
+<div class="stat-grid">
+    <a href="{% url 'dashboard_turfs' %}" class="stat-card stat-card-link">
+        <div class="stat-icon">&#9917;</div>
+        <div class="stat-number">{{ total_turfs }}</div>
+        <div class="stat-label">Total Turfs</div>
+    </a>
+    <a href="{% url 'dashboard_users' %}" class="stat-card stat-card-link">
+        <div class="stat-icon">&#128101;</div>
+        <div class="stat-number">{{ total_users }}</div>
+        <div class="stat-label">Total Users</div>
+    </a>
+    <a href="{% url 'dashboard_bookings' %}" class="stat-card stat-card-link">
+        <div class="stat-icon">&#128197;</div>
+        <div class="stat-number">{{ total_bookings }}</div>
+        <div class="stat-label">Total Bookings</div>
+    </a>
+    <a href="{% url 'dashboard_bookings' %}" class="stat-card stat-card-link">
+        <div class="stat-icon">&#128293;</div>
+        <div class="stat-number">{{ todays_bookings }}</div>
+        <div class="stat-label">Today's Bookings</div>
+    </a>
+</div>
+
+<div class="dashboard-section">
+    <h2>Recent Bookings</h2>
+    {% if recent_bookings %}
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Turf</th>
+                        <th>Date</th>
+                        <th>Start</th>
+                        <th>End</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in recent_bookings %}
+                        <tr>
+                            <td>{{ booking.user.username }}</td>
+                            <td>{{ booking.turf.name }}</td>
+                            <td>{{ booking.booking_date }}</td>
+                            <td>{{ booking.start_time|time:"h:i A" }}</td>
+                            <td>{{ booking.end_time|time:"h:i A" }}</td>
+                            <td>&#8377; {{ booking.total_price }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <p>No bookings yet.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ turf.name }} - TurfEase{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="turf-detail">
+        {% if turf.image %}
+            <img src="{{ turf.image.url }}" alt="{{ turf.name }}">
+        {% else %}
+            <div class="detail-placeholder">&#9917;</div>
+        {% endif %}
+        <div class="detail-info">
+            <h1>{{ turf.name }}</h1>
+            <p class="location">&#128205; {{ turf.location }}</p>
+            <p class="description">{{ turf.description }}</p>
+            <p class="price">&#8377; {{ turf.price_per_hour }} / hour</p>
+            {% if turf.price_5a_side > 0 %}
+                <p class="price" style="font-size: 0.95rem; opacity: 0.85;">5-a-side: + &#8377;{{ turf.price_5a_side }} fixed</p>
+            {% endif %}
+            {% if turf.price_7a_side > 0 %}
+                <p class="price" style="font-size: 0.95rem; opacity: 0.85;">7-a-side: + &#8377;{{ turf.price_7a_side }} fixed</p>
+            {% endif %}
+            {% if user.is_authenticated %}
+                {% if user.is_staff %}
+                    <a href="{% url 'dashboard_home' %}" class="btn-book" style="background:linear-gradient(135deg,#8b5cf6,#6366f1);">Go to Dashboard</a>
+                {% else %}
+                    <a href="{% url 'book_turf' turf.pk %}" class="btn-book">Book Now</a>
+                {% endif %}
+            {% else %}
+                <a href="{% url 'login' %}" class="btn-book">Login to Book</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Users - TurfEase{% endblock %}
+
+{% block dashboard_content %}
+<h1>All Users</h1>
+
+{% if users %}
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Joined</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in users %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ u.username }}</td>
+                        <td>{{ u.email|default:"—" }}</td>
+                        <td>
+                            {% if u.is_staff %}
+                                <span class="status-badge status-confirmed">Admin</span>
+                            {% else %}
+                                <span class="status-badge status-pending">User</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ u.date_joined|date:"M d, Y" }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div class="empty-state">
+        <div class="empty-icon">&#128101;</div>
+        <h3>No users yet</h3>
+    </div>
+{% endif %}
+{% endblock %}

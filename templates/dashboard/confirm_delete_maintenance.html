@@ -1,0 +1,20 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Remove Maintenance Block - TurfEase{% endblock %}
+
+{% block dashboard_content %}
+<div class="container" style="display:flex; justify-content:center;">
+    <div class="confirm-box">
+        <div class="confirm-icon">&#128736;</div>
+        <h2>Remove Maintenance Block?</h2>
+        <p>This will unblock <strong>{{ block.turf.name }}</strong> on {{ block.date }} from {{ block.start_time|time:"h:i A" }} to {{ block.end_time|time:"h:i A" }}.</p>
+        <form method="post">
+            {% csrf_token %}
+            <div class="btn-group">
+                <a href="{% url 'dashboard_maintenance' %}" class="btn-cancel">Cancel</a>
+                <button type="submit" class="btn-confirm-delete">Remove</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
