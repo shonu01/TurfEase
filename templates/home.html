@@ -7,7 +7,7 @@
 <!-- Hero Section with Cover Image -->
 <section class="hero" style="position:relative; padding:0; min-height:520px; display:flex; align-items:center; justify-content:center;">
     <!-- Cover background image — update the path below with your own image -->
-    <div class="hero-cover" style="position:absolute; inset:0; background: url('{% static 'images/cover.jpg' %}') center/cover no-repeat; z-index:0;"></div>
+    <div class="hero-cover" style="position:absolute; inset:0; background: url('{% static 'images/football.jpeg' %}') center/cover no-repeat; z-index:0;"></div>
     <div class="hero-overlay" style="position:absolute; inset:0; background: linear-gradient(135deg, rgba(15,23,42,0.85) 0%, rgba(30,41,59,0.75) 60%, rgba(15,23,42,0.9) 100%); z-index:1;"></div>
     <div class="hero-content" style="position:relative; z-index:2; padding:100px 24px;">
         <h1>Book Your <span>Perfect Turf</span></h1>
@@ -16,51 +16,30 @@
     </div>
 </section>
 
-<!-- Features Section -->
-<section class="section">
-    <h2 class="section-title">Why Choose TurfEase?</h2>
-    <p class="section-subtitle">Everything you need to book the perfect sports venue</p>
-    <div class="features-grid">
-        <div class="feature-card">
-            <div class="feature-icon teal">&#9889;</div>
-            <h3>Easy Booking</h3>
-            <p>Reserve turfs in seconds with our simple and intuitive booking system.</p>
-        </div>
-        <div class="feature-card">
-            <div class="feature-icon green">&#128337;</div>
-            <h3>Real-time Availability</h3>
-            <p>Check available time slots instantly and never face double bookings.</p>
-        </div>
-        <div class="feature-card">
-            <div class="feature-icon blue">&#128176;</div>
-            <h3>Affordable Pricing</h3>
-            <p>Transparent hourly pricing with automatic cost calculation.</p>
-        </div>
-    </div>
-</section>
-
-<!-- Popular Turfs Section -->
-{% if popular_turfs %}
-<section class="section section-dark">
-    <h2 class="section-title">Popular Turfs</h2>
-    <p class="section-subtitle">Top-rated venues ready for your game</p>
-    <div class="turf-grid" style="max-width:1100px; margin:0 auto;">
-        {% for turf in popular_turfs %}
-            <div class="turf-card">
-                {% if turf.image %}
-                    <img src="{{ turf.image.url }}" alt="{{ turf.name }}">
-                {% else %}
-                    <div class="card-placeholder">&#9917;</div>
-                {% endif %}
-                <div class="card-body">
-                    <h3>{{ turf.name }}</h3>
-                    <p class="location">&#128205; {{ turf.location }}</p>
-                    <p class="price">&#8377; {{ turf.price_per_hour }} / hour</p>
-                    <a href="{% url 'turf_detail' turf.pk %}" class="btn-card">View Details</a>
-                </div>
+<!-- Features Section with Team Background Watermark -->
+<section class="section" style="position:relative; overflow:hidden;">
+    <!-- Team background watermark image — paste your football club/team image path below -->
+    <div style="position:absolute; inset:0; background: url('{% static 'images/football.jpeg' %}') center/cover no-repeat; opacity:0.08; z-index:0;"></div>
+    <div style="position:relative; z-index:1;">
+        <h2 class="section-title">Why Choose TurfEase?</h2>
+        <p class="section-subtitle">Everything you need to book the perfect sports venue</p>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon teal">&#9889;</div>
+                <h3>Easy Booking</h3>
+                <p>Reserve turfs in seconds with our simple and intuitive booking system.</p>
             </div>
-        {% endfor %}
+            <div class="feature-card">
+                <div class="feature-icon green">&#128337;</div>
+                <h3>Real-time Availability</h3>
+                <p>Check available time slots instantly and never face double bookings.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon blue">&#128176;</div>
+                <h3>Affordable Pricing</h3>
+                <p>Transparent hourly pricing with automatic cost calculation.</p>
+            </div>
+        </div>
     </div>
 </section>
-{% endif %}
 {% endblock %}
