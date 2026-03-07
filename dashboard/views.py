@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
 from django.contrib import messages
+from django.core.paginator import Paginator
 from django.utils import timezone
 from turfs.models import Turf, MaintenanceBlock
 from turfs.forms import TurfForm, MaintenanceBlockForm
@@ -35,7 +36,21 @@ def dashboard_home(request):
 @user_passes_test(is_admin, login_url='admin_login')
 def dashboard_turfs(request):
     turfs = Turf.objects.all().order_by('-created_at')
-    return render(request, 'dashboard/dashboard_turfs.html', {'turfs': turfs})
+
+    search = request.GET.get('q', '')
+    if search:
+        from django.db.models import Q
+        turfs = turfs.filter(
+            Q(name__icontains=search) | Q(location__icontains=search)
+        )
+
+    paginator = Paginator(turfs, 12)
+    page_obj = paginator.get_page(request.GET.get('page'))
+
+    return render(request, 'dashboard/dashboard_turfs.html', {
+        'page_obj': page_obj,
+        'search': search,
+    })
 
 
 @login_required(login_url='admin_login')
@@ -82,21 +97,65 @@ def delete_turf(request, pk):
 @user_passes_test(is_admin, login_url='admin_login')
 def dashboard_bookings(request):
     bookings = Booking.objects.select_related('user', 'turf').all()
-    return render(request, 'dashboard/dashboard_bookings.html', {'bookings': bookings})
+
+    search = request.GET.get('q', '')
+    if search:
+        from django.db.models import Q
+        bookings = bookings.filter(
+            Q(user__username__icontains=search) | Q(turf__name__icontains=search)
+        )
+
+    filter_date = request.GET.get('date', '')
+    if filter_date:
+        bookings = bookings.filter(booking_date=filter_date)
+
+    paginator = Paginator(bookings, 15)
+    page_obj = paginator.get_page(request.GET.get('page'))
+
+    return render(request, 'dashboard/dashboard_bookings.html', {
+        'page_obj': page_obj,
+        'search': search,
+        'filter_date': filter_date,
+    })
 
 
 @login_required(login_url='admin_login')
 @user_passes_test(is_admin, login_url='admin_login')
 def dashboard_users(request):
     users = User.objects.all().order_by('-date_joined')
-    return render(request, 'dashboard/dashboard_users.html', {'users': users})
+
+    search = request.GET.get('q', '')
+    if search:
+        from django.db.models import Q
+        users = users.filter(
+            Q(username__icontains=search) | Q(email__icontains=search)
+        )
+
+    paginator = Paginator(users, 15)
+    page_obj = paginator.get_page(request.GET.get('page'))
+
+    return render(request, 'dashboard/dashboard_users.html', {
+        'page_obj': page_obj,
+        'search': search,
+    })
 
 
 @login_required(login_url='admin_login')
 @user_passes_test(is_admin, login_url='admin_login')
 def dashboard_maintenance(request):
     blocks = MaintenanceBlock.objects.select_related('turf').all()
-    return render(request, 'dashboard/dashboard_maintenance.html', {'blocks': blocks})
+
+    search = request.GET.get('q', '')
+    if search:
+        blocks = blocks.filter(turf__name__icontains=search)
+
+    paginator = Paginator(blocks, 15)
+    page_obj = paginator.get_page(request.GET.get('page'))
+
+    return render(request, 'dashboard/dashboard_maintenance.html', {
+        'page_obj': page_obj,
+        'search': search,
+    })
 
 
 @login_required(login_url='admin_login')

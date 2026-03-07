@@ -1194,3 +1194,89 @@ a.stat-card-link:hover {
     opacity: 1;
     transform: translateY(0);
 }
+
+/* ===== SEARCH BAR ===== */
+.search-bar {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+    animation: fadeIn .4s ease;
+}
+.search-bar .form-control {
+    flex: 1;
+    min-width: 180px;
+}
+
+/* ===== PAGINATION ===== */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    margin-top: 32px;
+    padding: 16px 0;
+    animation: fadeIn .4s ease;
+}
+.page-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    padding: 0 12px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    transition: all .2s ease;
+    text-decoration: none;
+}
+.page-link:hover {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+    transform: translateY(-2px);
+}
+.page-link.active {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+    box-shadow: 0 4px 12px rgba(20,184,166,.3);
+}
+
+/* ===== BOOKING CONFIRMATION DETAILS ===== */
+.confirm-details {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    animation: fadeInUp .4s ease;
+}
+.confirm-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+    transition: background .2s;
+}
+.confirm-row:last-child { border-bottom: none; }
+.confirm-row:hover { background: var(--bg-card); }
+.confirm-label {
+    font-size: 14px;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+.confirm-value {
+    font-size: 15px;
+    color: var(--text-primary);
+    font-weight: 600;
+}
+.total-row {
+    background: var(--bg-card);
+    border-top: 2px solid var(--accent);
+}

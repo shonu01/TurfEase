@@ -5,9 +5,16 @@
 {% block dashboard_content %}
 <h1>Manage Turfs</h1>
 
-<a href="{% url 'add_turf' %}" class="btn-add">&#43; Add New Turf</a>
+<div style="display:flex; gap:14px; align-items:center; flex-wrap:wrap; margin-bottom:24px;">
+    <a href="{% url 'add_turf' %}" class="btn-add" style="margin-bottom:0;">&#43; Add New Turf</a>
+    <form method="get" class="search-bar" style="margin-bottom:0; flex:1;">
+        <input type="text" name="q" class="form-control" placeholder="Search turfs..." value="{{ search }}">
+        <button type="submit" class="btn-submit" style="padding:10px 22px;">Search</button>
+        {% if search %}<a href="{% url 'dashboard_turfs' %}" class="btn-cancel" style="padding:10px 16px;">Clear</a>{% endif %}
+    </form>
+</div>
 
-{% if turfs %}
+{% if page_obj %}
     <div class="table-container">
         <table>
             <thead>
@@ -21,7 +28,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for turf in turfs %}
+                {% for turf in page_obj %}
                     <tr>
                         <td>{{ forloop.counter }}</td>
                         <td>{{ turf.name }}</td>
@@ -37,11 +44,33 @@
             </tbody>
         </table>
     </div>
+
+    {% if page_obj.has_other_pages %}
+    <div class="pagination">
+        {% if page_obj.has_previous %}
+            <a href="?q={{ search }}&page={{ page_obj.previous_page_number }}" class="page-link">&laquo; Prev</a>
+        {% endif %}
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <span class="page-link active">{{ num }}</span>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <a href="?q={{ search }}&page={{ num }}" class="page-link">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+        {% if page_obj.has_next %}
+            <a href="?q={{ search }}&page={{ page_obj.next_page_number }}" class="page-link">Next &raquo;</a>
+        {% endif %}
+    </div>
+    {% endif %}
 {% else %}
     <div class="empty-state">
         <div class="empty-icon">&#9917;</div>
-        <h3>No turfs added yet</h3>
-        <p>Click the button above to add your first turf.</p>
+        <h3>No turfs found</h3>
+        {% if search %}
+            <p>No turfs matching "{{ search }}".</p>
+        {% else %}
+            <p>Click the button above to add your first turf.</p>
+        {% endif %}
     </div>
 {% endif %}
 {% endblock %}

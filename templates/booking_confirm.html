@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Confirm Booking - TurfEase{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="form-container">
+        <h2>Confirm Your Booking</h2>
+        <p style="color: var(--text-muted); margin-bottom: 24px;">Please review the details below before confirming.</p>
+
+        <div class="confirm-details">
+            <div class="confirm-row">
+                <span class="confirm-label">&#9917; Turf</span>
+                <span class="confirm-value">{{ turf.name }}</span>
+            </div>
+            <div class="confirm-row">
+                <span class="confirm-label">&#128205; Location</span>
+                <span class="confirm-value">{{ turf.location }}</span>
+            </div>
+            <div class="confirm-row">
+                <span class="confirm-label">&#128197; Date</span>
+                <span class="confirm-value">{{ booking_date|date:"M d, Y" }}</span>
+            </div>
+            <div class="confirm-row">
+                <span class="confirm-label">&#128337; Time</span>
+                <span class="confirm-value">{{ start_time|time:"h:i A" }} — {{ end_time|time:"h:i A" }}</span>
+            </div>
+            <div class="confirm-row">
+                <span class="confirm-label">&#128101; Team Size</span>
+                <span class="confirm-value">{{ members }}</span>
+            </div>
+            <div class="confirm-row total-row">
+                <span class="confirm-label">&#128176; Total Price</span>
+                <span class="confirm-value" style="color: var(--accent); font-size: 22px; font-weight: 800;">&#8377; {{ total_price }}</span>
+            </div>
+        </div>
+
+        <form method="post" style="margin-top: 28px;">
+            {% csrf_token %}
+            <div class="btn-group" style="display:flex; gap:14px;">
+                <a href="{% url 'book_turf' turf.pk %}" class="btn-cancel">&#8592; Go Back</a>
+                <button type="submit" class="btn-submit" style="flex:1;">Confirm & Book</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

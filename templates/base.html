@@ -22,6 +22,7 @@
             {% if user.is_authenticated %}
                 {% if not user.is_staff %}
                     <li><a href="{% url 'booking_history' %}">My Bookings</a></li>
+                    <li><a href="{% url 'profile' %}">Profile</a></li>
                 {% endif %}
                 {% if user.is_staff %}
                     <li><a href="{% url 'dashboard_home' %}">Dashboard</a></li>

@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load custom_filters %}
 
 {% block title %}My Bookings - TurfEase{% endblock %}
 
@@ -9,7 +10,17 @@
         <p>View all your past and upcoming reservations</p>
     </div>
 
-    {% if bookings %}
+    <!-- Search & Filter Bar -->
+    <form method="get" class="search-bar">
+        <input type="text" name="q" class="form-control" placeholder="Search by turf name..." value="{{ search }}">
+        <input type="date" name="date" class="form-control" value="{{ filter_date }}" style="max-width:200px;">
+        <button type="submit" class="btn-submit" style="padding:12px 28px;">Filter</button>
+        {% if search or filter_date %}
+            <a href="{% url 'booking_history' %}" class="btn-cancel" style="padding:12px 20px;">Clear</a>
+        {% endif %}
+    </form>
+
+    {% if page_obj %}
         <div class="table-container">
             <table>
                 <thead>
@@ -22,12 +33,13 @@
                         <th>Members</th>
                         <th>Total Price</th>
                         <th>Booked On</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for booking in bookings %}
+                    {% for booking in page_obj %}
                         <tr>
-                            <td>{{ forloop.counter }}</td>
+                            <td>{{ forloop.counter|add:page_obj.start_index|add:"-1" }}</td>
                             <td>{{ booking.turf.name }}</td>
                             <td>{{ booking.booking_date }}</td>
                             <td>{{ booking.start_time|time:"h:i A" }}</td>
@@ -35,17 +47,48 @@
                             <td>{{ booking.get_members_display }}</td>
                             <td>&#8377; {{ booking.total_price }}</td>
                             <td>{{ booking.created_at|date:"M d, Y" }}</td>
+                            <td>
+                                {% if booking.booking_date|is_future_date %}
+                                    <a href="{% url 'cancel_booking' booking.pk %}" class="btn-action btn-delete">Cancel</a>
+                                {% else %}
+                                    <span class="status-badge" style="background:var(--bg-tertiary); color:var(--text-muted);">Past</span>
+                                {% endif %}
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
+
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+                <a href="?q={{ search }}&date={{ filter_date }}&page={{ page_obj.previous_page_number }}" class="page-link">&laquo; Prev</a>
+            {% endif %}
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <span class="page-link active">{{ num }}</span>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <a href="?q={{ search }}&date={{ filter_date }}&page={{ num }}" class="page-link">{{ num }}</a>
+                {% endif %}
+            {% endfor %}
+            {% if page_obj.has_next %}
+                <a href="?q={{ search }}&date={{ filter_date }}&page={{ page_obj.next_page_number }}" class="page-link">Next &raquo;</a>
+            {% endif %}
+        </div>
+        {% endif %}
     {% else %}
         <div class="empty-state">
             <div class="empty-icon">&#128197;</div>
-            <h3>No bookings yet</h3>
-            <p>Browse our turfs and make your first booking!</p>
-            <a href="{% url 'turf_list' %}" class="btn-hero">Browse Turfs</a>
+            <h3>No bookings found</h3>
+            {% if search or filter_date %}
+                <p>No bookings match your filters. Try changing your search.</p>
+                <a href="{% url 'booking_history' %}" class="btn-hero">Clear Filters</a>
+            {% else %}
+                <p>Browse our turfs and make your first booking!</p>
+                <a href="{% url 'turf_list' %}" class="btn-hero">Browse Turfs</a>
+            {% endif %}
         </div>
     {% endif %}
 </div>

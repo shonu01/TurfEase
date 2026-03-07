@@ -3,5 +3,7 @@ from . import views
 
 urlpatterns = [
     path('book/<int:turf_id>/', views.book_turf, name='book_turf'),
+    path('confirm/', views.confirm_booking, name='confirm_booking'),
+    path('cancel/<int:pk>/', views.cancel_booking, name='cancel_booking'),
     path('history/', views.booking_history, name='booking_history'),
 ]

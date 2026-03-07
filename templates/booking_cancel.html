@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}Cancel Booking - TurfEase{% endblock %}
+
+{% block content %}
+<div class="container" style="display:flex; justify-content:center; padding-top:60px;">
+    <div class="confirm-box">
+        <div class="confirm-icon">&#9888;&#65039;</div>
+        <h2>Cancel Booking?</h2>
+        <p>Are you sure you want to cancel your booking for <strong>{{ booking.turf.name }}</strong> on <strong>{{ booking.booking_date|date:"M d, Y" }}</strong> ({{ booking.start_time|time:"h:i A" }} — {{ booking.end_time|time:"h:i A" }})?</p>
+        <form method="post">
+            {% csrf_token %}
+            <div class="btn-group">
+                <a href="{% url 'booking_history' %}" class="btn-cancel">Keep Booking</a>
+                <button type="submit" class="btn-confirm-delete">Yes, Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

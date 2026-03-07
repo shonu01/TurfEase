@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile - TurfEase{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="form-container">
+        <div style="text-align:center; margin-bottom:24px;">
+            <div style="font-size:48px; margin-bottom:8px;">&#128100;</div>
+            <h2 style="margin-bottom:4px;">My Profile</h2>
+            <p style="color:var(--text-muted); font-size:14px;">{{ user.username }} &middot; Joined {{ user.date_joined|date:"M d, Y" }}</p>
+        </div>
+        <form method="post">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <ul class="errorlist">
+                            {% for error in field.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn-submit">Update Profile</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

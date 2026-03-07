@@ -5,7 +5,15 @@
 {% block dashboard_content %}
 <h1>All Bookings</h1>
 
-{% if bookings %}
+<!-- Search & Filter -->
+<form method="get" class="search-bar" style="margin-bottom:24px;">
+    <input type="text" name="q" class="form-control" placeholder="Search by user or turf..." value="{{ search }}">
+    <input type="date" name="date" class="form-control" value="{{ filter_date }}" style="max-width:200px;">
+    <button type="submit" class="btn-submit" style="padding:10px 22px;">Filter</button>
+    {% if search or filter_date %}<a href="{% url 'dashboard_bookings' %}" class="btn-cancel" style="padding:10px 16px;">Clear</a>{% endif %}
+</form>
+
+{% if page_obj %}
     <div class="table-container">
         <table>
             <thead>
@@ -21,7 +29,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for booking in bookings %}
+                {% for booking in page_obj %}
                     <tr>
                         <td>{{ forloop.counter }}</td>
                         <td>{{ booking.user.username }}</td>
@@ -36,11 +44,33 @@
             </tbody>
         </table>
     </div>
+
+    {% if page_obj.has_other_pages %}
+    <div class="pagination">
+        {% if page_obj.has_previous %}
+            <a href="?q={{ search }}&date={{ filter_date }}&page={{ page_obj.previous_page_number }}" class="page-link">&laquo; Prev</a>
+        {% endif %}
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <span class="page-link active">{{ num }}</span>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <a href="?q={{ search }}&date={{ filter_date }}&page={{ num }}" class="page-link">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+        {% if page_obj.has_next %}
+            <a href="?q={{ search }}&date={{ filter_date }}&page={{ page_obj.next_page_number }}" class="page-link">Next &raquo;</a>
+        {% endif %}
+    </div>
+    {% endif %}
 {% else %}
     <div class="empty-state">
         <div class="empty-icon">&#128197;</div>
-        <h3>No bookings yet</h3>
-        <p>Bookings will appear here when users start booking turfs.</p>
+        <h3>No bookings found</h3>
+        {% if search or filter_date %}
+            <p>No bookings match your filters.</p>
+        {% else %}
+            <p>Bookings will appear here when users start booking turfs.</p>
+        {% endif %}
     </div>
 {% endif %}
 {% endblock %}

@@ -5,7 +5,14 @@
 {% block dashboard_content %}
 <h1>All Users</h1>
 
-{% if users %}
+<!-- Search -->
+<form method="get" class="search-bar" style="margin-bottom:24px;">
+    <input type="text" name="q" class="form-control" placeholder="Search by username or email..." value="{{ search }}">
+    <button type="submit" class="btn-submit" style="padding:10px 22px;">Search</button>
+    {% if search %}<a href="{% url 'dashboard_users' %}" class="btn-cancel" style="padding:10px 16px;">Clear</a>{% endif %}
+</form>
+
+{% if page_obj %}
     <div class="table-container">
         <table>
             <thead>
@@ -18,7 +25,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for u in users %}
+                {% for u in page_obj %}
                     <tr>
                         <td>{{ forloop.counter }}</td>
                         <td>{{ u.username }}</td>
@@ -36,10 +43,29 @@
             </tbody>
         </table>
     </div>
+
+    {% if page_obj.has_other_pages %}
+    <div class="pagination">
+        {% if page_obj.has_previous %}
+            <a href="?q={{ search }}&page={{ page_obj.previous_page_number }}" class="page-link">&laquo; Prev</a>
+        {% endif %}
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <span class="page-link active">{{ num }}</span>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <a href="?q={{ search }}&page={{ num }}" class="page-link">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+        {% if page_obj.has_next %}
+            <a href="?q={{ search }}&page={{ page_obj.next_page_number }}" class="page-link">Next &raquo;</a>
+        {% endif %}
+    </div>
+    {% endif %}
 {% else %}
     <div class="empty-state">
         <div class="empty-icon">&#128101;</div>
-        <h3>No users yet</h3>
+        <h3>No users found</h3>
+        {% if search %}<p>No users matching "{{ search }}".</p>{% endif %}
     </div>
 {% endif %}
 {% endblock %}

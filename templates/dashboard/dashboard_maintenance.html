@@ -5,9 +5,16 @@
 {% block dashboard_content %}
 <h1>Maintenance Blocks</h1>
 
-<a href="{% url 'add_maintenance' %}" class="btn-add">&#43; Block a Slot</a>
+<div style="display:flex; gap:14px; align-items:center; flex-wrap:wrap; margin-bottom:24px;">
+    <a href="{% url 'add_maintenance' %}" class="btn-add" style="margin-bottom:0;">&#43; Block a Slot</a>
+    <form method="get" class="search-bar" style="margin-bottom:0; flex:1;">
+        <input type="text" name="q" class="form-control" placeholder="Search by turf name..." value="{{ search }}">
+        <button type="submit" class="btn-submit" style="padding:10px 22px;">Search</button>
+        {% if search %}<a href="{% url 'dashboard_maintenance' %}" class="btn-cancel" style="padding:10px 16px;">Clear</a>{% endif %}
+    </form>
+</div>
 
-{% if blocks %}
+{% if page_obj %}
     <div class="table-container">
         <table>
             <thead>
@@ -22,7 +29,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for block in blocks %}
+                {% for block in page_obj %}
                     <tr>
                         <td>{{ forloop.counter }}</td>
                         <td>{{ block.turf.name }}</td>
@@ -38,11 +45,33 @@
             </tbody>
         </table>
     </div>
+
+    {% if page_obj.has_other_pages %}
+    <div class="pagination">
+        {% if page_obj.has_previous %}
+            <a href="?q={{ search }}&page={{ page_obj.previous_page_number }}" class="page-link">&laquo; Prev</a>
+        {% endif %}
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <span class="page-link active">{{ num }}</span>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <a href="?q={{ search }}&page={{ num }}" class="page-link">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+        {% if page_obj.has_next %}
+            <a href="?q={{ search }}&page={{ page_obj.next_page_number }}" class="page-link">Next &raquo;</a>
+        {% endif %}
+    </div>
+    {% endif %}
 {% else %}
     <div class="empty-state">
         <div class="empty-icon">&#128736;</div>
-        <h3>No maintenance blocks</h3>
-        <p>All turfs are currently available for booking.</p>
+        <h3>No maintenance blocks found</h3>
+        {% if search %}
+            <p>No blocks matching "{{ search }}".</p>
+        {% else %}
+            <p>All turfs are currently available for booking.</p>
+        {% endif %}
     </div>
 {% endif %}
 {% endblock %}
