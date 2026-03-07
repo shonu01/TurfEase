@@ -181,3 +181,9 @@ def booking_history(request):
         'filter_date': filter_date,
     }
     return render(request, 'booking_history.html', context)
+
+
+@login_required
+def booking_receipt(request, pk):
+    booking = get_object_or_404(Booking, pk=pk, user=request.user)
+    return render(request, 'booking_receipt.html', {'booking': booking})

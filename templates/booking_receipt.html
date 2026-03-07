@@ -1,0 +1,178 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Receipt #{{ booking.pk }} - TurfEase</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f1f5f9;
+            color: #0f172a;
+            padding: 20px;
+        }
+        .receipt {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0,0,0,.08);
+            overflow: hidden;
+        }
+        .receipt-header {
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            padding: 32px 36px;
+            text-align: center;
+            color: #fff;
+        }
+        .receipt-header .logo {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+        .receipt-header .logo span { color: #14b8a6; }
+        .receipt-header p { color: #94a3b8; font-size: 13px; }
+        .receipt-header .receipt-id {
+            display: inline-block;
+            margin-top: 14px;
+            background: rgba(20,184,166,.15);
+            color: #14b8a6;
+            padding: 6px 18px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+        .receipt-body { padding: 32px 36px; }
+        .receipt-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .receipt-row:last-child { border-bottom: none; }
+        .receipt-label {
+            font-size: 14px;
+            color: #64748b;
+            font-weight: 500;
+        }
+        .receipt-value {
+            font-size: 15px;
+            color: #0f172a;
+            font-weight: 600;
+            text-align: right;
+        }
+        .receipt-total {
+            background: #f8fafc;
+            border-top: 2px solid #14b8a6;
+            padding: 20px 36px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .receipt-total .label {
+            font-size: 16px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+        .receipt-total .amount {
+            font-size: 28px;
+            font-weight: 800;
+            color: #14b8a6;
+        }
+        .receipt-footer {
+            text-align: center;
+            padding: 20px 36px 28px;
+            color: #94a3b8;
+            font-size: 12px;
+            border-top: 1px solid #e2e8f0;
+        }
+        .actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 24px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 28px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            transition: transform .2s, box-shadow .2s;
+        }
+        .btn:hover { transform: translateY(-2px); }
+        .btn-print {
+            background: linear-gradient(135deg, #14b8a6, #22c55e);
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(20,184,166,.3);
+        }
+        .btn-back {
+            background: #f1f5f9;
+            color: #334155;
+            border: 1px solid #e2e8f0;
+        }
+        @media print {
+            body { background: #fff; padding: 0; }
+            .receipt { box-shadow: none; border-radius: 0; }
+            .actions { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="receipt">
+        <div class="receipt-header">
+            <div class="logo">Turf<span>Ease</span></div>
+            <p>Booking Confirmation Receipt</p>
+            <div class="receipt-id">Receipt #{{ booking.pk }}</div>
+        </div>
+        <div class="receipt-body">
+            <div class="receipt-row">
+                <span class="receipt-label">Booked By</span>
+                <span class="receipt-value">{{ booking.user.username }}</span>
+            </div>
+            <div class="receipt-row">
+                <span class="receipt-label">Turf</span>
+                <span class="receipt-value">{{ booking.turf.name }}</span>
+            </div>
+            <div class="receipt-row">
+                <span class="receipt-label">Location</span>
+                <span class="receipt-value">{{ booking.turf.location }}</span>
+            </div>
+            <div class="receipt-row">
+                <span class="receipt-label">Date</span>
+                <span class="receipt-value">{{ booking.booking_date|date:"M d, Y" }}</span>
+            </div>
+            <div class="receipt-row">
+                <span class="receipt-label">Time</span>
+                <span class="receipt-value">{{ booking.start_time|time:"h:i A" }} — {{ booking.end_time|time:"h:i A" }}</span>
+            </div>
+            <div class="receipt-row">
+                <span class="receipt-label">Team Size</span>
+                <span class="receipt-value">{{ booking.get_members_display }}</span>
+            </div>
+            <div class="receipt-row">
+                <span class="receipt-label">Booked On</span>
+                <span class="receipt-value">{{ booking.created_at|date:"M d, Y h:i A" }}</span>
+            </div>
+        </div>
+        <div class="receipt-total">
+            <span class="label">Total Paid</span>
+            <span class="amount">&#8377; {{ booking.total_price }}</span>
+        </div>
+        <div class="receipt-footer">
+            Thank you for booking with TurfEase! &middot; &copy; 2026 TurfEase
+        </div>
+    </div>
+
+    <div class="actions">
+        <button class="btn btn-print" onclick="window.print()">&#128424; Print Receipt</button>
+        <a href="{% url 'booking_history' %}" class="btn btn-back">&#8592; Back to Bookings</a>
+    </div>
+</body>
+</html>

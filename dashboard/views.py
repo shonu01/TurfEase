@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.core.paginator import Paginator
+from django.http import HttpResponse
 from django.utils import timezone
 from turfs.models import Turf, MaintenanceBlock
 from turfs.forms import TurfForm, MaintenanceBlockForm
@@ -185,3 +186,45 @@ def delete_maintenance(request, pk):
         messages.success(request, 'Maintenance block removed!')
         return redirect('dashboard_maintenance')
     return render(request, 'dashboard/confirm_delete_maintenance.html', {'block': block})
+
+
+@login_required(login_url='admin_login')
+@user_passes_test(is_admin, login_url='admin_login')
+def export_bookings_csv(request):
+    import csv
+
+    bookings = Booking.objects.select_related('user', 'turf').all().order_by('-booking_date')
+
+    # Apply same filters as the bookings page
+    search = request.GET.get('q', '')
+    if search:
+        from django.db.models import Q
+        bookings = bookings.filter(
+            Q(user__username__icontains=search) | Q(turf__name__icontains=search)
+        )
+    filter_date = request.GET.get('date', '')
+    if filter_date:
+        bookings = bookings.filter(booking_date=filter_date)
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename="turfease_bookings_{timezone.now().strftime("%Y%m%d")}.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['#', 'User', 'Email', 'Turf', 'Location', 'Date', 'Start Time', 'End Time', 'Members', 'Total Price', 'Booked On'])
+
+    for i, b in enumerate(bookings, 1):
+        writer.writerow([
+            i,
+            b.user.username,
+            b.user.email,
+            b.turf.name,
+            b.turf.location,
+            b.booking_date.strftime('%Y-%m-%d'),
+            b.start_time.strftime('%I:%M %p'),
+            b.end_time.strftime('%I:%M %p'),
+            b.get_members_display(),
+            str(b.total_price),
+            b.created_at.strftime('%Y-%m-%d %H:%M'),
+        ])
+
+    return response

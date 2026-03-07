@@ -48,6 +48,7 @@
                             <td>&#8377; {{ booking.total_price }}</td>
                             <td>{{ booking.created_at|date:"M d, Y" }}</td>
                             <td>
+                                <a href="{% url 'booking_receipt' booking.pk %}" class="btn-action btn-edit" style="margin-right:6px;">Receipt</a>
                                 {% if booking.booking_date|is_future_date %}
                                     <a href="{% url 'cancel_booking' booking.pk %}" class="btn-action btn-delete">Cancel</a>
                                 {% else %}

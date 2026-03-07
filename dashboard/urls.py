@@ -8,6 +8,7 @@ urlpatterns = [
     path('turfs/edit/<int:pk>/', views.edit_turf, name='edit_turf'),
     path('turfs/delete/<int:pk>/', views.delete_turf, name='delete_turf'),
     path('bookings/', views.dashboard_bookings, name='dashboard_bookings'),
+    path('bookings/export-csv/', views.export_bookings_csv, name='export_bookings_csv'),
     path('users/', views.dashboard_users, name='dashboard_users'),
     path('maintenance/', views.dashboard_maintenance, name='dashboard_maintenance'),
     path('maintenance/add/', views.add_maintenance, name='add_maintenance'),

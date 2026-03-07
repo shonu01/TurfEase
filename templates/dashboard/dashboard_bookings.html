@@ -11,6 +11,7 @@
     <input type="date" name="date" class="form-control" value="{{ filter_date }}" style="max-width:200px;">
     <button type="submit" class="btn-submit" style="padding:10px 22px;">Filter</button>
     {% if search or filter_date %}<a href="{% url 'dashboard_bookings' %}" class="btn-cancel" style="padding:10px 16px;">Clear</a>{% endif %}
+    <a href="{% url 'export_bookings_csv' %}?q={{ search }}&date={{ filter_date }}" class="btn-add" style="margin-bottom:0; margin-left:auto;">&#128229; Export CSV</a>
 </form>
 
 {% if page_obj %}
