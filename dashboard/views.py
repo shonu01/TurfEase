@@ -5,9 +5,10 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 from django.http import HttpResponse
 from django.utils import timezone
+from django.db import models, transaction
 from turfs.models import Turf, MaintenanceBlock
 from turfs.forms import TurfForm, MaintenanceBlockForm
-from bookings.models import Booking
+from bookings.models import Booking, CancelledBooking, Notification
 
 
 def is_admin(user):
@@ -21,14 +22,20 @@ def dashboard_home(request):
     total_users = User.objects.count()
     total_bookings = Booking.objects.count()
     todays_bookings = Booking.objects.filter(booking_date=timezone.now().date()).count()
+    total_cancelled = CancelledBooking.objects.count()
+    total_refunded = CancelledBooking.objects.aggregate(total=models.Sum('refund_amount'))['total'] or 0
     recent_bookings = Booking.objects.select_related('user', 'turf')[:5]
+    recent_cancelled = CancelledBooking.objects.select_related('user')[:5]
 
     context = {
         'total_turfs': total_turfs,
         'total_users': total_users,
         'total_bookings': total_bookings,
         'todays_bookings': todays_bookings,
+        'total_cancelled': total_cancelled,
+        'total_refunded': total_refunded,
         'recent_bookings': recent_bookings,
+        'recent_cancelled': recent_cancelled,
     }
     return render(request, 'dashboard/dashboard_home.html', context)
 
@@ -169,8 +176,58 @@ def add_maintenance(request):
             if block.end_time <= block.start_time:
                 messages.error(request, 'End time must be after start time.')
             else:
-                block.save()
-                messages.success(request, 'Maintenance block added successfully!')
+                # Find bookings that conflict with this maintenance window
+                conflicting_bookings = Booking.objects.select_related('user', 'turf').filter(
+                    turf=block.turf,
+                    booking_date=block.date,
+                    start_time__lt=block.end_time,
+                    end_time__gt=block.start_time,
+                )
+
+                with transaction.atomic():
+                    block.save()
+
+                    cancelled_count = 0
+                    for booking in conflicting_bookings:
+                        # Create refund/cancellation record (full cashback)
+                        cancelled = CancelledBooking.objects.create(
+                            user=booking.user,
+                            turf=booking.turf,
+                            turf_name=booking.turf.name,
+                            turf_location=booking.turf.location,
+                            booking_date=booking.booking_date,
+                            start_time=booking.start_time,
+                            end_time=booking.end_time,
+                            members=booking.members,
+                            original_price=booking.total_price,
+                            refund_amount=booking.total_price,
+                            reason=f'Maintenance: {block.reason}' if block.reason else 'Cancelled due to scheduled maintenance',
+                        )
+
+                        # Notify the user
+                        Notification.objects.create(
+                            user=booking.user,
+                            title='Booking Cancelled — Full Refund',
+                            message=(
+                                f'Your booking for {booking.turf.name} on {booking.booking_date.strftime("%b %d, %Y")} '
+                                f'({booking.start_time.strftime("%I:%M %p")} – {booking.end_time.strftime("%I:%M %p")}) '
+                                f'has been cancelled due to maintenance. '
+                                f'A full cashback of ₹{booking.total_price} has been issued.'
+                            ),
+                            link=f'/bookings/cancelled-receipt/{cancelled.pk}/',
+                        )
+
+                        booking.delete()
+                        cancelled_count += 1
+
+                if cancelled_count > 0:
+                    messages.warning(
+                        request,
+                        f'Maintenance block added. {cancelled_count} conflicting booking(s) were auto-cancelled '
+                        f'with full cashback. Affected users have been notified.'
+                    )
+                else:
+                    messages.success(request, 'Maintenance block added successfully!')
                 return redirect('dashboard_maintenance')
     else:
         form = MaintenanceBlockForm()
@@ -228,3 +285,32 @@ def export_bookings_csv(request):
         ])
 
     return response
+
+
+@login_required(login_url='admin_login')
+@user_passes_test(is_admin, login_url='admin_login')
+def dashboard_cancelled(request):
+    cancelled = CancelledBooking.objects.select_related('user', 'turf').all()
+
+    search = request.GET.get('q', '')
+    if search:
+        from django.db.models import Q
+        cancelled = cancelled.filter(
+            Q(user__username__icontains=search) | Q(turf_name__icontains=search)
+        )
+
+    filter_date = request.GET.get('date', '')
+    if filter_date:
+        cancelled = cancelled.filter(booking_date=filter_date)
+
+    paginator = Paginator(cancelled, 15)
+    page_obj = paginator.get_page(request.GET.get('page'))
+
+    total_refunded = CancelledBooking.objects.aggregate(total=models.Sum('refund_amount'))['total'] or 0
+
+    return render(request, 'dashboard/dashboard_cancelled.html', {
+        'page_obj': page_obj,
+        'search': search,
+        'filter_date': filter_date,
+        'total_refunded': total_refunded,
+    })

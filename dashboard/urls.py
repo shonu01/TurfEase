@@ -13,4 +13,5 @@ urlpatterns = [
     path('maintenance/', views.dashboard_maintenance, name='dashboard_maintenance'),
     path('maintenance/add/', views.add_maintenance, name='add_maintenance'),
     path('maintenance/delete/<int:pk>/', views.delete_maintenance, name='delete_maintenance'),
+    path('cancelled/', views.dashboard_cancelled, name='dashboard_cancelled'),
 ]

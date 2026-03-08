@@ -47,6 +47,9 @@
                 <a href="{% url 'dashboard_maintenance' %}" class="{% if 'maintenance' in request.resolver_match.url_name %}active{% endif %}">
                     &#128736; Maintenance
                 </a>
+                <a href="{% url 'dashboard_cancelled' %}" class="{% if request.resolver_match.url_name == 'dashboard_cancelled' %}active{% endif %}">
+                    &#10060; Cancelled
+                </a>
                 <a href="{% url 'logout' %}">
                     &#128682; Logout
                 </a>

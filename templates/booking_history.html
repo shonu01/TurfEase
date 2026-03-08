@@ -92,5 +92,47 @@
             {% endif %}
         </div>
     {% endif %}
+
+    <!-- Cancelled Bookings (Maintenance Refunds) -->
+    {% if cancelled_bookings %}
+    <div style="margin-top: 48px;">
+        <div class="page-header" style="margin-bottom: 16px;">
+            <h2>&#10060; Cancelled Bookings (Maintenance)</h2>
+            <p>These bookings were cancelled due to scheduled maintenance. Full cashback issued.</p>
+        </div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Turf</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Refund</th>
+                        <th>Reason</th>
+                        <th>Cancelled On</th>
+                        <th>Receipt</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cb in cancelled_bookings %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ cb.turf_name }}</td>
+                            <td>{{ cb.booking_date }}</td>
+                            <td>{{ cb.start_time|time:"h:i A" }} — {{ cb.end_time|time:"h:i A" }}</td>
+                            <td style="color:#22c55e; font-weight:700;">&#8377; {{ cb.refund_amount }}</td>
+                            <td><span style="font-size:13px; color:var(--text-muted);">{{ cb.reason }}</span></td>
+                            <td>{{ cb.cancelled_at|date:"M d, Y" }}</td>
+                            <td>
+                                <a href="{% url 'cancelled_receipt' cb.pk %}" class="btn-action btn-edit">Receipt</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
 </div>
 {% endblock %}

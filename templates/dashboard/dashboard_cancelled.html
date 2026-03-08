@@ -1,0 +1,92 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Cancelled Bookings - TurfEase{% endblock %}
+
+{% block dashboard_content %}
+<h1>&#10060; Cancelled Bookings</h1>
+<p style="color:var(--text-muted); margin-bottom:20px;">Bookings auto-cancelled due to maintenance. All users received full cashback.</p>
+
+<div style="display:flex; gap:16px; margin-bottom:24px; flex-wrap:wrap;">
+    <div style="background:linear-gradient(135deg, rgba(239,68,68,.1), rgba(239,68,68,.05)); border:1px solid rgba(239,68,68,.2); border-radius:12px; padding:16px 24px; flex:1; min-width:180px;">
+        <div style="font-size:13px; color:var(--text-muted); font-weight:600;">Total Cancelled</div>
+        <div style="font-size:28px; font-weight:800; color:#ef4444; margin-top:4px;">{{ page_obj.paginator.count }}</div>
+    </div>
+    <div style="background:linear-gradient(135deg, rgba(34,197,94,.1), rgba(34,197,94,.05)); border:1px solid rgba(34,197,94,.2); border-radius:12px; padding:16px 24px; flex:1; min-width:180px;">
+        <div style="font-size:13px; color:var(--text-muted); font-weight:600;">Total Refunded</div>
+        <div style="font-size:28px; font-weight:800; color:#22c55e; margin-top:4px;">&#8377; {{ total_refunded }}</div>
+    </div>
+</div>
+
+<!-- Search & Filter -->
+<form method="get" class="search-bar" style="margin-bottom:24px;">
+    <input type="text" name="q" class="form-control" placeholder="Search by user or turf..." value="{{ search }}">
+    <input type="date" name="date" class="form-control" value="{{ filter_date }}" style="max-width:200px;">
+    <button type="submit" class="btn-submit" style="padding:10px 22px;">Filter</button>
+    {% if search or filter_date %}<a href="{% url 'dashboard_cancelled' %}" class="btn-cancel" style="padding:10px 16px;">Clear</a>{% endif %}
+</form>
+
+{% if page_obj %}
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>User</th>
+                    <th>Email</th>
+                    <th>Turf</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Original Price</th>
+                    <th>Refund</th>
+                    <th>Reason</th>
+                    <th>Cancelled On</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cb in page_obj %}
+                    <tr>
+                        <td>{{ forloop.counter|add:page_obj.start_index|add:"-1" }}</td>
+                        <td>{{ cb.user.username }}</td>
+                        <td>{{ cb.user.email }}</td>
+                        <td>{{ cb.turf_name }}</td>
+                        <td>{{ cb.booking_date }}</td>
+                        <td>{{ cb.start_time|time:"h:i A" }} — {{ cb.end_time|time:"h:i A" }}</td>
+                        <td style="text-decoration:line-through; opacity:0.5;">&#8377; {{ cb.original_price }}</td>
+                        <td style="color:#22c55e; font-weight:700;">&#8377; {{ cb.refund_amount }}</td>
+                        <td><span style="font-size:13px; opacity:0.7;">{{ cb.reason|truncatechars:30 }}</span></td>
+                        <td>{{ cb.cancelled_at|date:"M d, Y h:i A" }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if page_obj.has_other_pages %}
+    <div class="pagination">
+        {% if page_obj.has_previous %}
+            <a href="?q={{ search }}&date={{ filter_date }}&page={{ page_obj.previous_page_number }}" class="page-link">&laquo; Prev</a>
+        {% endif %}
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <span class="page-link active">{{ num }}</span>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <a href="?q={{ search }}&date={{ filter_date }}&page={{ num }}" class="page-link">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+        {% if page_obj.has_next %}
+            <a href="?q={{ search }}&date={{ filter_date }}&page={{ page_obj.next_page_number }}" class="page-link">Next &raquo;</a>
+        {% endif %}
+    </div>
+    {% endif %}
+{% else %}
+    <div class="empty-state">
+        <div class="empty-icon">&#10060;</div>
+        <h3>No cancelled bookings</h3>
+        {% if search or filter_date %}
+            <p>No cancelled bookings match your filters.</p>
+        {% else %}
+            <p>When maintenance blocks conflict with bookings, auto-cancelled entries will appear here.</p>
+        {% endif %}
+    </div>
+{% endif %}
+{% endblock %}

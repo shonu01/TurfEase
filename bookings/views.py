@@ -6,7 +6,7 @@ from django.db import transaction
 from datetime import datetime, date, timedelta
 from decimal import Decimal
 from turfs.models import Turf, MaintenanceBlock
-from .models import Booking
+from .models import Booking, CancelledBooking, Notification
 from .forms import BookingForm
 
 
@@ -177,10 +177,14 @@ def booking_history(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
+    # Cancelled bookings (maintenance refunds)
+    cancelled_bookings = CancelledBooking.objects.filter(user=request.user)
+
     context = {
         'page_obj': page_obj,
         'search': search,
         'filter_date': filter_date,
+        'cancelled_bookings': cancelled_bookings,
     }
     return render(request, 'booking_history.html', context)
 
@@ -189,3 +193,21 @@ def booking_history(request):
 def booking_receipt(request, pk):
     booking = get_object_or_404(Booking, pk=pk, user=request.user)
     return render(request, 'booking_receipt.html', {'booking': booking})
+
+
+@login_required
+def cancelled_receipt(request, pk):
+    cancelled = get_object_or_404(CancelledBooking, pk=pk, user=request.user)
+    return render(request, 'cancelled_receipt.html', {'cancelled': cancelled})
+
+
+@login_required
+def notifications_view(request):
+    user_notifications = Notification.objects.filter(user=request.user)
+    # Mark all as read on page visit
+    user_notifications.filter(is_read=False).update(is_read=True)
+
+    paginator = Paginator(user_notifications, 15)
+    page_obj = paginator.get_page(request.GET.get('page'))
+
+    return render(request, 'notifications.html', {'page_obj': page_obj})

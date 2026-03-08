@@ -22,6 +22,14 @@
             {% if user.is_authenticated %}
                 {% if not user.is_staff %}
                     <li><a href="{% url 'booking_history' %}">My Bookings</a></li>
+                    <li>
+                        <a href="{% url 'notifications' %}" class="nav-notif">
+                            &#128276;
+                            {% if unread_notification_count > 0 %}
+                                <span class="notif-badge">{{ unread_notification_count }}</span>
+                            {% endif %}
+                        </a>
+                    </li>
                     <li><a href="{% url 'profile' %}">Profile</a></li>
                 {% endif %}
                 {% if user.is_staff %}

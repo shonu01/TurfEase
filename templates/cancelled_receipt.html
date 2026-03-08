@@ -1,0 +1,225 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cancellation Receipt #{{ cancelled.pk }} - TurfEase</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f1f5f9;
+            color: #0f172a;
+            padding: 20px;
+        }
+        .receipt {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0,0,0,.08);
+            overflow: hidden;
+        }
+        .receipt-header {
+            background: linear-gradient(135deg, #7f1d1d, #991b1b);
+            padding: 32px 36px;
+            text-align: center;
+            color: #fff;
+        }
+        .receipt-header .logo {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+        .receipt-header .logo span { color: #fca5a5; }
+        .receipt-header p { color: #fecaca; font-size: 13px; }
+        .receipt-header .receipt-id {
+            display: inline-block;
+            margin-top: 14px;
+            background: rgba(252,165,165,.15);
+            color: #fca5a5;
+            padding: 6px 18px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+        .cancelled-badge {
+            display: inline-block;
+            margin-top: 12px;
+            background: rgba(255,255,255,.15);
+            color: #fff;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        .receipt-body { padding: 32px 36px; }
+        .receipt-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .receipt-row:last-child { border-bottom: none; }
+        .receipt-label {
+            font-size: 14px;
+            color: #64748b;
+            font-weight: 500;
+        }
+        .receipt-value {
+            font-size: 15px;
+            color: #0f172a;
+            font-weight: 600;
+            text-align: right;
+        }
+        .reason-box {
+            background: #fef2f2;
+            border-left: 4px solid #ef4444;
+            padding: 14px 18px;
+            margin: 20px 36px;
+            border-radius: 0 8px 8px 0;
+            font-size: 14px;
+            color: #991b1b;
+        }
+        .refund-section {
+            background: #f0fdf4;
+            border-top: 2px solid #22c55e;
+            padding: 20px 36px;
+        }
+        .refund-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+        }
+        .refund-row .label {
+            font-size: 14px;
+            color: #64748b;
+            font-weight: 500;
+        }
+        .refund-row .value {
+            font-size: 15px;
+            color: #0f172a;
+            font-weight: 600;
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+        .refund-row.cashback .label {
+            font-size: 16px;
+            font-weight: 700;
+            color: #166534;
+        }
+        .refund-row.cashback .value {
+            font-size: 28px;
+            font-weight: 800;
+            color: #22c55e;
+            text-decoration: none;
+            opacity: 1;
+        }
+        .receipt-footer {
+            text-align: center;
+            padding: 20px 36px 28px;
+            color: #94a3b8;
+            font-size: 12px;
+            border-top: 1px solid #e2e8f0;
+        }
+        .actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 24px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 28px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            transition: transform .2s, box-shadow .2s;
+        }
+        .btn:hover { transform: translateY(-2px); }
+        .btn-print {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(34,197,94,.3);
+        }
+        .btn-back {
+            background: #f1f5f9;
+            color: #334155;
+            border: 1px solid #e2e8f0;
+        }
+        @media print {
+            body { background: #fff; padding: 0; }
+            .receipt { box-shadow: none; border-radius: 0; }
+            .actions { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="receipt">
+        <div class="receipt-header">
+            <div class="logo">Turf<span>Ease</span></div>
+            <p>Booking Cancellation Receipt</p>
+            <div class="receipt-id">Cancellation #{{ cancelled.pk }}</div>
+            <div class="cancelled-badge">&#10060; CANCELLED</div>
+        </div>
+        <div class="receipt-body">
+            <div class="receipt-row">
+                <span class="receipt-label">Booked By</span>
+                <span class="receipt-value">{{ cancelled.user.username }}</span>
+            </div>
+            <div class="receipt-row">
+                <span class="receipt-label">Turf</span>
+                <span class="receipt-value">{{ cancelled.turf_name }}</span>
+            </div>
+            <div class="receipt-row">
+                <span class="receipt-label">Location</span>
+                <span class="receipt-value">{{ cancelled.turf_location }}</span>
+            </div>
+            <div class="receipt-row">
+                <span class="receipt-label">Date</span>
+                <span class="receipt-value">{{ cancelled.booking_date|date:"M d, Y" }}</span>
+            </div>
+            <div class="receipt-row">
+                <span class="receipt-label">Time</span>
+                <span class="receipt-value">{{ cancelled.start_time|time:"h:i A" }} — {{ cancelled.end_time|time:"h:i A" }}</span>
+            </div>
+            <div class="receipt-row">
+                <span class="receipt-label">Team Size</span>
+                <span class="receipt-value">{{ cancelled.members }}-a-side</span>
+            </div>
+            <div class="receipt-row">
+                <span class="receipt-label">Cancelled On</span>
+                <span class="receipt-value">{{ cancelled.cancelled_at|date:"M d, Y h:i A" }}</span>
+            </div>
+        </div>
+        <div class="reason-box">
+            <strong>Reason:</strong> {{ cancelled.reason }}
+        </div>
+        <div class="refund-section">
+            <div class="refund-row">
+                <span class="label">Original Amount</span>
+                <span class="value">&#8377; {{ cancelled.original_price }}</span>
+            </div>
+            <div class="refund-row cashback">
+                <span class="label">&#128176; Cashback / Refund</span>
+                <span class="value">&#8377; {{ cancelled.refund_amount }}</span>
+            </div>
+        </div>
+        <div class="receipt-footer">
+            We apologise for the inconvenience. Full refund has been processed. &middot; &copy; 2026 TurfEase
+        </div>
+    </div>
+
+    <div class="actions">
+        <button class="btn btn-print" onclick="window.print()">&#128424; Print Receipt</button>
+        <a href="{% url 'booking_history' %}" class="btn btn-back">&#8592; Back to Bookings</a>
+    </div>
+</body>
+</html>
