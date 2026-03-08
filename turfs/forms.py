@@ -1,6 +1,16 @@
 from django import forms
 from .models import Turf, MaintenanceBlock
 
+# Same time choices as the booking form (6:00 AM – 11:30 PM, 30-min intervals)
+TIME_CHOICES = [('', 'Select time')]
+for h24 in range(6, 24):
+    for minute in ('00', '30'):
+        hour12 = h24 % 12 or 12
+        period = 'AM' if h24 < 12 else 'PM'
+        label = f'{hour12}:{minute} {period}'
+        value = f'{h24:02d}:{minute}'
+        TIME_CHOICES.append((value, label))
+
 
 class TurfForm(forms.ModelForm):
     class Meta:
@@ -19,13 +29,24 @@ class TurfForm(forms.ModelForm):
 
 
 class MaintenanceBlockForm(forms.ModelForm):
+    start_time = forms.TimeField(
+        widget=forms.Select(
+            attrs={'class': 'form-control time-select'},
+            choices=TIME_CHOICES,
+        ),
+    )
+    end_time = forms.TimeField(
+        widget=forms.Select(
+            attrs={'class': 'form-control time-select'},
+            choices=TIME_CHOICES,
+        ),
+    )
+
     class Meta:
         model = MaintenanceBlock
         fields = ['turf', 'date', 'start_time', 'end_time', 'reason']
         widgets = {
             'turf': forms.Select(attrs={'class': 'form-control'}),
             'date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
-            'start_time': forms.TimeInput(attrs={'type': 'time', 'class': 'form-control'}),
-            'end_time': forms.TimeInput(attrs={'type': 'time', 'class': 'form-control'}),
             'reason': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Turf repair, Watering'}),
         }
