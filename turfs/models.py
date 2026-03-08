@@ -8,6 +8,7 @@ class Turf(models.Model):
     price_per_hour = models.DecimalField(max_digits=10, decimal_places=2)
     price_5a_side = models.DecimalField(max_digits=10, decimal_places=2, default=0, help_text='Additional fixed price for 5-a-side teams')
     price_7a_side = models.DecimalField(max_digits=10, decimal_places=2, default=0, help_text='Additional fixed price for 7-a-side teams')
+    price_11a_side = models.DecimalField(max_digits=10, decimal_places=2, default=0, help_text='Additional fixed price for 11-a-side teams')
     image = models.ImageField(upload_to='turf_images/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 

@@ -60,11 +60,13 @@ def book_turf(request, turf_id):
             hours = Decimal(str((end_dt - start_dt).total_seconds() / 3600))
             total_price = turf.price_per_hour * hours
 
-            # Add fixed surcharge for 5-a-side or 7-a-side
+            # Add fixed surcharge based on team size
             if members == 5:
                 total_price += turf.price_5a_side
             elif members == 7:
                 total_price += turf.price_7a_side
+            elif members == 11:
+                total_price += turf.price_11a_side
 
             # Store booking data in session for confirmation step
             request.session['pending_booking'] = {

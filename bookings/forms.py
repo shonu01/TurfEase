@@ -1,25 +1,29 @@
 from django import forms
 from .models import Booking
 
-TIME_CHOICES = []
-for hour in range(1, 13):
+# Generate chronologically ordered time choices (6:00 AM – 11:30 PM)
+TIME_CHOICES = [('', 'Select time')]
+for h24 in range(6, 24):
     for minute in ('00', '30'):
-        for period in ('AM', 'PM'):
-            label = f'{hour}:{minute} {period}'
-            # Convert to 24-hour value for the option value
-            h24 = hour % 12
-            if period == 'PM':
-                h24 += 12
-            value = f'{h24:02d}:{minute}'
-            TIME_CHOICES.append((value, label))
+        hour12 = h24 % 12 or 12
+        period = 'AM' if h24 < 12 else 'PM'
+        label = f'{hour12}:{minute} {period}'
+        value = f'{h24:02d}:{minute}'
+        TIME_CHOICES.append((value, label))
 
 
 class BookingForm(forms.ModelForm):
     start_time = forms.TimeField(
-        widget=forms.Select(attrs={'class': 'form-control'}, choices=TIME_CHOICES),
+        widget=forms.Select(
+            attrs={'class': 'form-control time-select'},
+            choices=TIME_CHOICES,
+        ),
     )
     end_time = forms.TimeField(
-        widget=forms.Select(attrs={'class': 'form-control'}, choices=TIME_CHOICES),
+        widget=forms.Select(
+            attrs={'class': 'form-control time-select'},
+            choices=TIME_CHOICES,
+        ),
     )
 
     class Meta:

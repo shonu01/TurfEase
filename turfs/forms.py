@@ -5,7 +5,7 @@ from .models import Turf, MaintenanceBlock
 class TurfForm(forms.ModelForm):
     class Meta:
         model = Turf
-        fields = ['name', 'location', 'description', 'price_per_hour', 'price_5a_side', 'price_7a_side', 'image']
+        fields = ['name', 'location', 'description', 'price_per_hour', 'price_5a_side', 'price_7a_side', 'price_11a_side', 'image']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control'}),
             'location': forms.TextInput(attrs={'class': 'form-control'}),
@@ -13,6 +13,7 @@ class TurfForm(forms.ModelForm):
             'price_per_hour': forms.NumberInput(attrs={'class': 'form-control'}),
             'price_5a_side': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Additional price for 5-a-side'}),
             'price_7a_side': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Additional price for 7-a-side'}),
+            'price_11a_side': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Additional price for 11-a-side'}),
             'image': forms.ClearableFileInput(attrs={'class': 'form-control'}),
         }
 

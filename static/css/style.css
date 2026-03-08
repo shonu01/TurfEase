@@ -726,6 +726,35 @@ textarea.form-control { resize: vertical; }
 .helptext { font-size: 12px; color: var(--text-faint); margin-top: 4px; display: block; }
 .errorlist { list-style: none; padding: 0; color: var(--danger); font-size: 13px; margin-top: 4px; }
 
+/* ===== TIME SELECT DROPDOWN ===== */
+select.time-select {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8.825a.5.5 0 0 1-.354-.146l-4-4a.5.5 0 1 1 .708-.708L6 7.617l3.646-3.646a.5.5 0 1 1 .708.708l-4 4A.5.5 0 0 1 6 8.825z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-size: 12px;
+    padding-right: 36px;
+    cursor: pointer;
+}
+select.time-select:hover {
+    border-color: var(--accent);
+}
+.time-slot-row {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 20px;
+}
+@media (max-width: 480px) {
+    .time-slot-row {
+        flex-direction: column;
+        gap: 0;
+    }
+    .time-slot-row .form-group {
+        margin-bottom: 20px !important;
+    }
+}
+
 /* ===== BOOKING INFO CARD ===== */
 .booking-info {
     background: linear-gradient(135deg, #0f172a, #1e293b);

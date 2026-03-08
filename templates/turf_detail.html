@@ -21,6 +21,9 @@
             {% if turf.price_7a_side > 0 %}
                 <p class="price" style="font-size: 0.95rem; opacity: 0.85;">7-a-side: + &#8377;{{ turf.price_7a_side }} fixed</p>
             {% endif %}
+            {% if turf.price_11a_side > 0 %}
+                <p class="price" style="font-size: 0.95rem; opacity: 0.85;">11-a-side: + &#8377;{{ turf.price_11a_side }} fixed</p>
+            {% endif %}
             {% if user.is_authenticated %}
                 {% if user.is_staff %}
                     <a href="{% url 'dashboard_home' %}" class="btn-book" style="background:linear-gradient(135deg,#8b5cf6,#6366f1);">Go to Dashboard</a>

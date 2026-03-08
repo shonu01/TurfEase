@@ -7,6 +7,7 @@ class Booking(models.Model):
     MEMBER_CHOICES = [
         (5, '5-a-side'),
         (7, '7-a-side'),
+        (11, '11-a-side'),
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='bookings')
